@@ -78,7 +78,7 @@ namespace Fina.Api.Handlers
             }
         }
 
-        public async Task<PagedResponse<List<Transaction?>>> GetByPeriodAsync(GetTransactionsByPeriodRequest request)
+        public async Task<PagedResponse<List<Transaction>?>> GetByPeriodAsync(GetTransactionsByPeriodRequest request)
         {
             try
             {
@@ -87,7 +87,7 @@ namespace Fina.Api.Handlers
             }
             catch
             {
-                return new PagedResponse<List<Transaction?>>(null, 500, "Não foi possível determinar a data de início ou de fim.");
+                return new PagedResponse<List<Transaction>?>(null, 500, "Não foi possível determinar a data de início ou de fim.");
             }
 
             try
@@ -107,11 +107,11 @@ namespace Fina.Api.Handlers
 
                 var count = await query.CountAsync();
 
-                return new PagedResponse<List<Transaction?>>(transactions, count, request.PageNumber, request.PageSize);
+                return new PagedResponse<List<Transaction>?>(transactions, count, request.PageNumber, request.PageSize);
             }
             catch
             {
-                return new PagedResponse<List<Transaction?>>(null, 500, "Não foi possível obter transações.");
+                return new PagedResponse<List<Transaction>?>(null, 500, "Não foi possível obter transações.");
             }
         }
 

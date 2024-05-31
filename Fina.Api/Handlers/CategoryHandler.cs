@@ -54,21 +54,33 @@ namespace Fina.Api.Handlers
             return new Response<Category?>(category, 200, $"{nameof(Category)} Deletado com sucesso.");
         }
 
-        public async Task<PagedResponse<List<Category?>>> GetAllAsync(GetAllCategoriesRequest request)
+        public async Task<PagedResponse<List<Category>?>> GetAllAsync(GetAllCategoriesRequest request)
         {
-            var query = context
-                .Categories
-                .Where(x => x.UserId == request.UserId)
-                .OrderBy(x => x.Title);
+            try
+            {
+                var query = context
+                    .Categories
+                    .AsNoTracking()
+                    .Where(x => x.UserId == request.UserId)
+                    .OrderBy(x => x.Title);
 
-            List<Category> categories = await query
-                .Skip((request.PageNumber - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .ToListAsync();
+                var categories = await query
+                    .Skip((request.PageNumber - 1) * request.PageSize)
+                    .Take(request.PageSize)
+                    .ToListAsync();
 
-            var count = await query .CountAsync();
+                var count = await query.CountAsync();
 
-            return new PagedResponse<List<Category?>>(categories, count, request.PageNumber,  request.PageSize);
+                return new PagedResponse<List<Category>?>(
+                    categories,
+                    count,
+                    request.PageNumber,
+                    request.PageSize);
+            }
+            catch
+            {
+                return new PagedResponse<List<Category>?>(null, 500, "Não foi possível consultar as categorias");
+            }
         }
 
         public async Task<Response<Category?>> GetByIdAsync(GetCategoryByIdRequest request)
